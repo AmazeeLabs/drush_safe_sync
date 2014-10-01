@@ -46,7 +46,7 @@ Without any option provided the command will:
       'drush safe-sync @dev --dev && drush uli' => 'Update from dev server with dev mode, then login.',
       'drush safe-sync' => 'Make the current installation "safe".',
     ),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_ROOT,
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
   );
 
   return $items;
