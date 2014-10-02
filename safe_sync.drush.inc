@@ -147,7 +147,36 @@ function drush_safe_sync($alias = NULL) {
     } catch (Exception $s) {}
   }
 
-  // @todo: set commerce_saferpay account/pass to test: 99867-94913159/XAjc3Kna
+  if (module_exists('commerce_saferpay')) {
+    _safe_sync_color_echo('Setting Commerce Saferpay to test account...');
+    $affected = 0;
+    try {
+      $rules = db_select('rules_config', 'rc')
+        ->condition('rc.name', 'commerce_payment_commerce_saferpay_%', 'LIKE')
+        ->fields('rc', array('name'))
+        ->execute()
+        ->fetchCol();
+      foreach ($rules as $rule_name) {
+        /* @var RulesReactionRule $rule */
+        $rule = rules_config_load($rule_name);
+        /* @var RulesAction $action */
+        foreach ($rule->actions() as $action) {
+          if (isset($action->settings['payment_method']['method_id'])
+              && strpos($action->settings['payment_method']['method_id'], 'commerce_saferpay_') === 0
+              && isset($action->settings['payment_method']['settings']['account_id'])
+              && $action->settings['payment_method']['settings']['account_id'] != '99867-94913159') {
+            $action->settings['payment_method']['settings']['account_id'] = '99867-94913159';
+            $action->settings['payment_method']['settings']['password'] = 'XAjc3Kna';
+            $action->save();
+            $affected++;
+          }
+        }
+      }
+    } catch (Exception $e) {}
+    if ($affected && !drush_get_option('dev')) {
+      _safe_sync_color_echo('Commerce Saferpay payment method now uses test account!', 'PLEASE NOTE: ');
+    }
+  }
 
   if (drush_get_option('dev')) {
 
