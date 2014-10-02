@@ -64,6 +64,7 @@ function _safe_sync_db($alias, $alias_record) {
             throw new Exception('Cannot create database.');
           }
         }
+        _safe_sync_color_echo('Drush sql-sync did not finished import because of errors, but database dump was downloaded. Importing it...');
         $credentials = $sql->creds(FALSE);
         if (!drush_shell_exec("gunzip < $filepath | mysql $credentials")) {
           throw new Exception('Dump import failed.');
