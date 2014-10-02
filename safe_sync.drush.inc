@@ -32,6 +32,7 @@ Without any option provided the command will:
     - memcache_admin
     - update
     - admin_language
+    - securepages
 ',
       ),
       'files' => array(
@@ -173,6 +174,7 @@ function drush_safe_sync($alias = NULL) {
       'memcache_admin',
       'update',
       'admin_language',
+      'securepages',
     ));
   }
 
