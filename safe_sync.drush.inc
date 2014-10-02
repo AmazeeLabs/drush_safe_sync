@@ -147,6 +147,8 @@ function drush_safe_sync($alias = NULL) {
     } catch (Exception $s) {}
   }
 
+  // @todo: set commerce_saferpay account/pass to test: 99867-94913159/XAjc3Kna
+
   if (drush_get_option('dev')) {
 
     _safe_sync_color_echo('Ensuring devel is enabled...');
