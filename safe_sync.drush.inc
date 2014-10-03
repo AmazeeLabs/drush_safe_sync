@@ -72,6 +72,16 @@ function drush_safe_sync($alias = NULL) {
   if ($alias) {
     list($alias, $alias_record) = _safe_sync_extract_alias($alias);
 
+    // Try to save search_api servers to restore them later.
+    try {
+      $cmd = 'drush eval \'var_export(db_select("search_api_server", "sas")->fields("sas", array("machine_name", "options"))->execute()->fetchAllKeyed());\' 2>/dev/null';
+      $ret = shell_exec($cmd);
+      if (strstr($ret, 'array')) {
+        eval('$search_api_servers = ' . $ret . ';');
+      }
+    } catch (Exception $e) {
+    }
+
     if (drush_get_option('files')) {
       _safe_sync_color_echo('Synchronizing files in background...');
       $command = 'drush -y rsync ' . $alias . ':%files sites/default/files >/dev/null 2>/dev/null &';
@@ -101,6 +111,15 @@ function drush_safe_sync($alias = NULL) {
     _safe_sync_color_echo('Making search indexes read-only...');
     $affected = 0;
     try {
+      if (!empty($search_api_servers)) {
+        foreach ($search_api_servers as $machine_name => $options) {
+          db_update('search_api_server')
+            ->condition('machine_name', $machine_name)
+            ->fields(array('options' => $options))
+            ->execute();
+        }
+        _safe_sync_color_echo('Search API servers was restored from previous configuration!', 'PLEASE NOTE: ');
+      }
       $affected = db_update('search_api_index')
         ->fields(array('read_only' => 1))
         ->execute();
