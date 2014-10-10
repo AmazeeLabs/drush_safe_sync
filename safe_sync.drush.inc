@@ -41,6 +41,9 @@ Without any option provided the command will:
       'git-modules' => array(
         'description' => 'Sync/init/update git submodules.',
       ),
+      'restore-sas' => array(
+        'description' => 'Restore search_api server settings.',
+      ),
     ),
     'examples' => array(
       'git pull && drush safe-sync @live --files --git-modules' => 'Update staging from production.',
@@ -72,14 +75,17 @@ function drush_safe_sync($alias = NULL) {
   if ($alias) {
     list($alias, $alias_record) = _safe_sync_extract_alias($alias);
 
-    // Try to save search_api servers to restore them later.
-    try {
-      $cmd = 'drush eval \'var_export(db_select("search_api_server", "sas")->fields("sas", array("machine_name", "options"))->execute()->fetchAllKeyed());\' 2>/dev/null';
-      $ret = shell_exec($cmd);
-      if (strstr($ret, 'array')) {
-        eval('$search_api_servers = ' . $ret . ';');
+    if (drush_get_option('restore-sas')) {
+      // Try to save search_api servers to restore them later.
+      try {
+        $cmd = 'drush eval \'var_export(db_select("search_api_server", "sas")->fields("sas", array("machine_name", "options"))->execute()->fetchAllKeyed());\' 2>/dev/null';
+        $ret = shell_exec($cmd);
+        if (strstr($ret, 'array')) {
+          eval('$search_api_servers = ' . $ret . ';');
+        }
       }
-    } catch (Exception $e) {
+      catch (Exception $e) {
+      }
     }
 
     if (drush_get_option('files')) {
