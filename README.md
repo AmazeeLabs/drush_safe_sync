@@ -1,3 +1,11 @@
+# Todo
+
+- Realtime output result of `drush sql-sync` (http://stackoverflow.com/a/6144213/580371)
+- Replace `--restore-sas` option with `--sapi` (Search API). Provide some modes:
+  - `readonly`: just set all indexes to readonly mode
+  - `restore`: restore Search API servers settings (as `--restore-sas` currently does)
+  - `restore-reindex`: the same + reindex in background
+
 # Drush safe-sync command
 
 Helps keep staging/dev servers in actual state.
