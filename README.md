@@ -1,5 +1,6 @@
 # Todo
 
+- Create `fix-domains` command (request from Bastian)
 - Realtime output result of `drush sql-sync` (http://stackoverflow.com/a/6144213/580371)
 - Replace `--restore-sas` option with `--sapi` (Search API). Provide some modes:
   - `readonly`: just set all indexes to readonly mode
