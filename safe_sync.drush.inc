@@ -31,7 +31,7 @@ Without any option provided the command will:
     - memcache
     - memcache_admin
     - update
-    - admin_language
+    - admin_languaged
     - securepages
 ',
       ),
@@ -90,7 +90,7 @@ function drush_safe_sync($alias = NULL) {
 
     if (drush_get_option('files')) {
       _safe_sync_color_echo('Synchronizing files in background...');
-      $command = 'drush -y rsync ' . $alias . ':%files sites/default/files >/dev/null 2>/dev/null &';
+      $command = 'drush -y rsync ' . $alias . ':%files %files >/dev/null 2>/dev/null &';
       if (drush_get_context('DRUSH_VERBOSE')) {
         drush_print('Executing: ' . $command, 0, STDERR);
       }
