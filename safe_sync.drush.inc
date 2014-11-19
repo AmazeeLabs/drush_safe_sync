@@ -231,6 +231,7 @@ function drush_safe_sync($alias = NULL) {
       'update',
       'admin_language',
       'securepages',
+      'cdn',
     ));
   }
 
