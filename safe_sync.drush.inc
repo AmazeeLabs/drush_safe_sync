@@ -105,7 +105,7 @@ function drush_safe_sync($alias = NULL) {
 
   drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_FULL);
 
-  if (!isset($conf['mail_system']['default-system']) || $conf['mail_system']['default-system'] != 'DevelMailLog') {
+  if (!isset($GLOBALS['conf']['mail_system']['default-system']) || $GLOBALS['conf']['mail_system']['default-system'] != 'DevelMailLog') {
     _safe_sync_color_echo('Configuring email reroute...');
     drush_shell_exec('drush en reroute_email -y');
     variable_set('reroute_email_address', 'development@amazee.com');
