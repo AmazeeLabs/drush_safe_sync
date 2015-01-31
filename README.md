@@ -1,5 +1,6 @@
 # Todo
 
+- Set "elysia_cron_disabled" variable to FALSE if elysia_cron is installed
 - Check if the cdn module should be disabled in all modes (currently it is disabled only in --dev mode), or should some action be taken to make it work safe
 - Create `fix-domains` command (request from Bastian)
 - Realtime output result of `drush sql-sync` (http://stackoverflow.com/a/6144213/580371)
