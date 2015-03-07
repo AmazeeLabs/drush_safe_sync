@@ -211,7 +211,18 @@ function drush_safe_sync($alias = NULL) {
   if (drush_get_option('dev')) {
 
     _safe_sync_color_echo('Ensuring devel is enabled...');
-    drush_shell_exec('drush en devel -y');
+    $devel_enabled = FALSE;
+    try {
+      $devel_enabled = db_select('system', 's')
+        ->condition('s.name', 'devel')
+        ->fields('s', array('status'))
+        ->execute()
+        ->fetchField();
+    }
+    catch (Exception $e) {}
+    if (!$devel_enabled) {
+      drush_shell_exec('drush en devel -y');
+    }
 
     _safe_sync_color_echo('Allowing all users to view devel info...');
     foreach (array(DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID) as $rid) {
