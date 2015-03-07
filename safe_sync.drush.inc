@@ -15,7 +15,7 @@ This works even if database is empty and domain module is enabled (sql-sync does
 If database does not exist, the command will try to create it.
 
 Without any option provided the command will:
-  - enable emails reroute (only if mail system is not set to DevelMailLog)
+  - enable emails reroute (only if mail system is not set to DevelMailLog and http://confluence.amazeelabs.com/display/KNOWLEDGE/Save+outgoing+emails+locally is not used)
   - make all search indexes readonly
   - correct domains/domain-variants basing on the configured $base_url
 ',
@@ -105,7 +105,12 @@ function drush_safe_sync($alias = NULL) {
 
   drush_bootstrap(DRUSH_BOOTSTRAP_DRUPAL_FULL);
 
-  if (!isset($GLOBALS['conf']['mail_system']['default-system']) || $GLOBALS['conf']['mail_system']['default-system'] != 'DevelMailLog') {
+  $devel_mail = (isset($GLOBALS['conf']['mail_system']['default-system']) && $GLOBALS['conf']['mail_system']['default-system'] === 'DevelMailLog');
+  $output = array();
+  $code = NULL;
+  exec('cat $(which sendmail) | grep "file_put_contents("', $output, $code);
+  $local_mail = (!empty($output) && $code === 0);
+  if (!$devel_mail && !$local_mail) {
     _safe_sync_color_echo('Configuring email reroute...');
     drush_shell_exec('drush en reroute_email -y');
     variable_set('reroute_email_address', 'development@amazee.com');
