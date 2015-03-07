@@ -37,7 +37,8 @@ function _safe_sync_extract_alias($alias) {
  */
 function _safe_sync_db($alias, $alias_record) {
   _safe_sync_color_echo('Downloading database...');
-  if (!drush_shell_exec("drush sql-sync $alias default -y")) {
+  system("drush sql-sync $alias default -y", $result);
+  if ($result !== 0) {
     // The most popular problems here are the domain module or empty database:
     // drush needs the lowest bootstrap level to download the database from
     // remote site, however, when it tries to import dump, it bootstraps to
