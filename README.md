@@ -1,5 +1,6 @@
 # Todo
 
+- If the redirect module enabled: update absolute paths in the `redirect` column of the `redirect` table to local $base_url
 - Set "elysia_cron_disabled" variable to FALSE if elysia_cron is installed
 - Check if the cdn module should be disabled in all modes (currently it is disabled only in --dev mode), or should some action be taken to make it work safe
 - Create `fix-domains` command (request from Bastian)
