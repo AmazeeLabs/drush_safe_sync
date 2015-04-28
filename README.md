@@ -17,7 +17,7 @@ Helps update/sync local sites from dev/staging/live servers.
 
 See `drush help safe-sync` for more information.
 
-**Tested only with amazee Drupal 7 installations.**
+**Tested only with Amazee Labs Drupal 7 installations.**
 
 ## Installation
 
