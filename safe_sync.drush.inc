@@ -108,7 +108,7 @@ function drush_safe_sync($alias = NULL) {
   $devel_mail = (isset($GLOBALS['conf']['mail_system']['default-system']) && $GLOBALS['conf']['mail_system']['default-system'] === 'DevelMailLog');
   $output = array();
   $code = NULL;
-  exec('cat $(which sendmail) | grep "file_put_contents("', $output, $code);
+  exec('cat "$(which sendmail)" | grep "file_put_contents("', $output, $code);
   $local_mail = (!empty($output) && $code === 0);
   if (!$devel_mail && !$local_mail) {
     _safe_sync_color_echo('Configuring email reroute...');
