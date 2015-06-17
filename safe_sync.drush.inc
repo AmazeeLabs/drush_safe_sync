@@ -316,7 +316,7 @@ function drush_safe_sync_fix_domains($new_domain = NULL) {
       catch (Exception $e) {}
     }
     elseif ($drupal_version == 6) {
-      db_query("UPDATE {domain} SET subdomain = '%s' WHERE domain_id = 0");
+      db_query("UPDATE {domain} SET subdomain = '%s' WHERE domain_id = 0", $new_domain);
       try {
         db_query("
           UPDATE {domain_variants}
