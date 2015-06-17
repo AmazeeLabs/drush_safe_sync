@@ -53,6 +53,15 @@ Without any option provided the command will:
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
   );
 
+  $items['fix-domains'] = array(
+    'description' => 'Updates domains and domain variants. Compatible with Drupal 6 and 7.',
+    'examples' => array(
+      'drush fix-domains site.lo' => 'Will update main domain and domain variants to "site.lo"',
+      'drush fix-domains' => 'Will try to detect the domain from the $base_url and then update main domain and domain variants',
+    ),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_DATABASE,
+  );
+
   return $items;
 }
 
@@ -258,4 +267,65 @@ function drush_safe_sync($alias = NULL) {
   drush_shell_exec('drush cc all');
 
   _safe_sync_color_echo('DONE!');
+}
+
+/**
+ * Implements drush_hook_COMMAND().
+ */
+function drush_safe_sync_fix_domains($new_domain = NULL) {
+  if (empty($new_domain)) {
+    if (in_array($GLOBALS['base_url'], array('http://default', 'https://default'))) {
+      drush_set_error('fix-domains', 'Cannot guess the domain because the $base_url is not set in settings.pnp! Please either set the $base_url, or use fix-domains command with explicit domain, example: drush fix-domains new-domain.com');
+      return FALSE;
+    }
+    $new_domain = preg_replace('#(^https?://)|(/+$)#', '', $GLOBALS['base_url']);
+  }
+  $drupal_version = drush_drupal_major_version();
+  if ($drupal_version == 7) {
+    $old_domain = db_select('domain', 'd')
+      ->fields('d', array('subdomain'))
+      ->condition('d.is_default', 1)
+      ->execute()
+      ->fetchField();
+
+  }
+  elseif ($drupal_version == 6) {
+    $old_domain = db_result(db_query("SELECT subdomain FROM {domain} WHERE domain_id = 0"));
+  }
+  else {
+    drush_set_error('fix-domains', 'Cannot work with Drupal version ' . $drupal_version . '!');
+    return FALSE;
+  }
+  if (drush_confirm("This will replace $old_domain with $new_domain. Are you sure you want to continue?")) {
+    if ($drupal_version == 7) {
+      db_update('domain')
+        ->fields(array('subdomain' => $new_domain))
+        ->condition('is_default', 1)
+        ->execute();
+      try {
+        db_query("
+          UPDATE {domain_variants}
+          SET path = REPLACE(path, :old_domain, :new_domain)
+          WHERE path LIKE :old_like
+        ", array(
+          ':old_domain' => $old_domain,
+          ':new_domain' => $new_domain,
+          ':old_like' => '%' . db_like($old_domain) . '%',
+        ));
+      }
+      catch (Exception $e) {}
+    }
+    elseif ($drupal_version == 6) {
+      db_query("UPDATE {domain} SET subdomain = '%s' WHERE domain_id = 0");
+      try {
+        db_query("
+          UPDATE {domain_variants}
+          SET path = REPLACE(path, '%s', '%s')
+          WHERE path LIKE '%%%s%%'
+        ", $old_domain, $new_domain, $old_domain);
+      }
+      catch (Exception $e) {}
+    }
+  }
+  drupal_set_message("Replaced $old_domain with $new_domain successfully.");
 }
