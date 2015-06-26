@@ -275,7 +275,7 @@ function drush_safe_sync($alias = NULL) {
 function drush_safe_sync_fix_domains($new_domain = NULL) {
   if (empty($new_domain)) {
     if (in_array($GLOBALS['base_url'], array('http://default', 'https://default'))) {
-      drush_set_error('fix-domains', 'Cannot guess the domain because the $base_url is not set in settings.pnp! Please either set the $base_url, or use fix-domains command with explicit domain, example: drush fix-domains new-domain.com');
+      drush_set_error('fix-domains', 'Cannot guess the domain because the $base_url is not set in settings.php! Please either set the $base_url, or use fix-domains command with explicit domain, example: drush fix-domains new-domain.com');
       return FALSE;
     }
     $new_domain = preg_replace('#(^https?://)|(/+$)#', '', $GLOBALS['base_url']);
